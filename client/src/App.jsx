@@ -4,6 +4,7 @@ import { ThemeProvider } from "@mui/material/styles"; //  Updated import for MUI
 import CssBaseline from "@mui/material/CssBaseline"; // Optional: resets browser styling
 import MainRouter from "../MainRouter";
 import theme from "../theme";
+import "./App.css";
 
 const App = () => {
   return (

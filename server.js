@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import config from "./config/config.js";
 import app from "./server/express.js";
 import mongoose from "mongoose";
@@ -10,9 +11,12 @@ mongoose
   })
   .then(() => {
     console.log("Connected to the database!");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection failed:", err?.message || err);
   });
-mongoose.connection.on("error", () => {
-  throw new Error(`unable to connect to database: ${config.mongoUri}`);
+mongoose.connection.on("error", (err) => {
+  console.error(`MongoDB connection error to ${config.mongoUri}:`, err?.message || err);
 });
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to User application." });

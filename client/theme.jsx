@@ -18,7 +18,21 @@ const theme = createTheme({
     },
   },
   typography: {
-    // `useNextVariants` is removed in MUI v5; it's on by default
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+    button: {
+      textTransform: 'none',
+    },
   },
   custom: {
     openTitle: "#3f4771",

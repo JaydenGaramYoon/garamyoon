@@ -28,11 +28,14 @@ const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [open, setOpen] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
+  const [viewingProject, setViewingProject] = useState(null);
   const [projectForm, setProjectForm] = useState({
     title: "",
+    time: "",
     image: "",
     description: "",
     technologies: "",
+    skills: "",
     role: "",
     github: "",
     liveDemo: "",
@@ -63,7 +66,8 @@ const Projects = () => {
   };
 
   const handleSubmit = () => {
-    const currentJwt = auth.isAuthenticated(); // 최신 JWT 토큰 가져오기
+    const currentJwt = auth.isAuthenticated() || {}; // 최신 JWT 토큰 가져오기 (가드)
+    const token = currentJwt.token;
 
     // 필수 필드 검증
     if (!projectForm.title.trim()) {
@@ -94,15 +98,24 @@ const Projects = () => {
       alert("Your role is required");
       return;
     }
+    if (!projectForm.time.trim()) {
+      alert("Project time period is required");
+      return;
+    }
 
     const projectData = {
       title: projectForm.title.trim(),
+      time: projectForm.time.trim(),
       image: projectForm.image.trim(),
       description: projectForm.description.trim(),
       technologies: projectForm.technologies
         .split(",")
         .map((tech) => tech.trim())
         .filter((tech) => tech.length > 0),
+      skills: projectForm.skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0),
       role: projectForm.role.trim(),
       problemLog: projectForm.problemLog.trim(),
       testingLog: projectForm.testingLog.trim(),
@@ -140,7 +153,7 @@ const Projects = () => {
     console.log("Sending project data:", projectData); // 디버그 로그
 
     if (editingProject) {
-      update({ projectId: editingProject }, { t: currentJwt.token }, projectData).then((data) => {
+      update({ projectId: editingProject }, { t: token }, projectData).then((data) => {
         if (data && !data.error) {
           setProjects(projects.map((p) => (p._id === editingProject ? data : p)));
           handleClose();
@@ -151,7 +164,7 @@ const Projects = () => {
       });
     } else {
       console.log("Creating project with JWT:", currentJwt); // 디버그 로그 추가
-      create({ t: currentJwt.token }, projectData).then((data) => {
+      create({ t: token }, projectData).then((data) => {
         if (data && !data.error) {
           list().then((updatedData) => {
             if (updatedData && !updatedData.error) {
@@ -171,9 +184,11 @@ const Projects = () => {
     setEditingProject(project._id);
     setProjectForm({
       title: project.title,
+      time: project.time,
       image: project.image,
       description: project.description,
-      technologies: project.technologies.join(", "),
+      technologies: (project.technologies || []).join(", "),
+      skills: (project.skills || []).join(", "),
       role: project.role,
       github: project.github || "",
       liveDemo: project.liveDemo || "",
@@ -184,8 +199,9 @@ const Projects = () => {
   };
 
   const handleDelete = (projectId) => {
-    const currentJwt = auth.isAuthenticated();
-    remove({ projectId }, { t: currentJwt.token }).then((data) => {
+    const currentJwt = auth.isAuthenticated() || {};
+    const token = currentJwt.token;
+    remove({ projectId }, { t: token }).then((data) => {
       if (data && !data.error) {
         setProjects(projects.filter((p) => p._id !== projectId));
       }
@@ -195,11 +211,14 @@ const Projects = () => {
   const handleClose = () => {
     setOpen(false);
     setEditingProject(null);
+    setViewingProject(null);
     setProjectForm({
       title: "",
+      time: "",
       image: "",
       description: "",
       technologies: "",
+      skills: "",
       role: "",
       github: "",
       liveDemo: "",
@@ -208,101 +227,161 @@ const Projects = () => {
     });
   };
 
+  const handleCardClick = (project) => {
+    setViewingProject(project);
+  };
+
   return (
     <Box>
       <Typography variant="h3" gutterBottom sx={{
-                          fontWeight: "bold",
+                          fontWeight: 800,
                           color: "#3eb93e",
+                          letterSpacing: -0.3,
                           mt: 4,
                           mb: 4,
                           textAlign: "center",
                         }}>
-        Projects
+        Works
       </Typography>
       <Grid container spacing={3} justifyContent="center">
         {projects.map((project) => (
-          <Grid item xs={12} md={6} lg={4} key={project._id} display="flex" justifyContent="center">
-            <Card sx={{ height: "100%", display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 400 }}>
+          <Grid item xs={12} md={6} lg={4} key={project._id} sx={{ display: "flex" }}>
+            <Card 
+              sx={{ 
+                width: "100%", 
+                maxWidth: 450, 
+                display: "flex", 
+                flexDirection: "column", 
+                margin: '0 auto',
+                cursor: 'pointer',
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 4,
+                }
+              }}
+              onClick={() => handleCardClick(project)}
+            >
               <CardMedia
                 component="img"
                 height="200"
                 image={project.image}
                 alt={project.title}
               />
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography variant="h6" gutterBottom>
+              <CardContent sx={{ flexGrow: 1, p: 2, display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                   {project.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                {(project.time ?? '').trim() !== '' && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontStyle: 'italic' }}>
+                    {project.time}
+                  </Typography>
+                )}
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flexGrow: 1 }}>
                   {project.description}
                 </Typography>
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  Role: {project.role}
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  <strong>Role:</strong> {project.role}
                 </Typography>
-                <Box sx={{ mb: 2 }}>
-                  {project.technologies.map((tech, index) => (
-                    <Chip
-                      key={index}
-                      label={tech}
-                      size="small"
-                      sx={{ mr: 0.5, mb: 0.5 }}
-                    />
-                  ))}
-                </Box>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  {project.github && (
+                {(project.technologies || []).length > 0 && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    <strong>Technologies:</strong> {project.technologies.join(', ')}
+                  </Typography>
+                )}
+                {Array.isArray(project.skills) && project.skills.length > 0 && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    <strong>Skills:</strong> {project.skills.join(', ')}
+                  </Typography>
+                )}
+                <Box sx={{ display: "flex", gap: 1, flexWrap: 'wrap', mt: 'auto' }}>
+                  {project.github && project.github.trim() !== "" && (
                     <Button
                       size="small"
+                      variant="outlined"
                       startIcon={<GitHubIcon />}
                       href={project.github}
                       target="_blank"
+                      sx={{
+                        textTransform: "none",
+                        borderColor: "#3eb93e",
+                        color: "#3eb93e",
+                        ":hover": { borderColor: "#2a8a2a", color: "#2a8a2a" },
+                      }}
                     >
                       GitHub
                     </Button>
                   )}
-                  {project.liveDemo && (
+                  {project.liveDemo && project.liveDemo.trim() !== "" && (
                     <Button
                       size="small"
+                      variant="outlined"
                       startIcon={<LaunchIcon />}
                       href={project.liveDemo}
                       target="_blank"
+                      sx={{
+                        textTransform: "none",
+                        borderColor: "#3eb93e",
+                        color: "#3eb93e",
+                        ":hover": { borderColor: "#2a8a2a", color: "#2a8a2a" },
+                      }}
                     >
                       Live Demo
                     </Button>
                   )}
-                  {project.problemLog && (
+                  {project.problemLog && project.problemLog.trim() !== "" && (
                     <Button
                       size="small"
+                      variant="outlined"
                       startIcon={<LaunchIcon />}
                       href={project.problemLog}
                       target="_blank"
+                      sx={{
+                        textTransform: "none",
+                        borderColor: "#3eb93e",
+                        color: "#3eb93e",
+                        ":hover": { borderColor: "#2a8a2a", color: "#2a8a2a" },
+                      }}
                     >
                       Dev Log
                     </Button>
                   )}
-                  {project.testingLog && (
+                  {project.testingLog && project.testingLog.trim() !== "" && (
                     <Button
                       size="small"
+                      variant="outlined"
                       startIcon={<LaunchIcon />}
                       href={project.testingLog}
                       target="_blank"
+                      sx={{
+                        textTransform: "none",
+                        borderColor: "#3eb93e",
+                        color: "#3eb93e",
+                        ":hover": { borderColor: "#2a8a2a", color: "#2a8a2a" },
+                      }}
                     >
                       Test Report
                     </Button>
                   )}
                 </Box>
+
                 {auth.isAuthenticated() && auth.isAuthenticated().user && auth.isAuthenticated().user.admin && (
-                  <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+                  <Box sx={{ mt: 2, display: "flex", gap: 1, alignSelf: 'flex-start' }}>
                     <IconButton
                       size="small"
-                      onClick={() => handleEdit(project)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(project);
+                      }}
                     >
                       <EditIcon />
                     </IconButton>
                     <IconButton
                       size="small"
                       color="error"
-                      onClick={() => handleDelete(project._id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(project._id);
+                      }}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -336,6 +415,168 @@ const Projects = () => {
         </Fab>
       )}
 
+      {/* Project Detail Modal */}
+      {viewingProject && (
+        <Dialog 
+          open={!!viewingProject} 
+          onClose={handleClose} 
+          maxWidth="md" 
+          fullWidth
+          sx={{
+            '& .MuiDialog-paper': {
+              maxHeight: '90vh',
+            }
+          }}
+        >
+          <DialogTitle component="div" sx={{ pb: 1 }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+              {viewingProject.title}
+            </Typography>
+            {viewingProject.time && (
+              <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', mt: 0.5 }}>
+                {viewingProject.time}
+              </Typography>
+            )}
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ mb: 3 }}>
+              <CardMedia
+                component="img"
+                image={viewingProject.image}
+                alt={viewingProject.title}
+                sx={{ 
+                  borderRadius: 1,
+                  maxHeight: 400,
+                  objectFit: 'cover',
+                  width: '100%'
+                }}
+              />
+            </Box>
+            
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Description
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, lineHeight: 1.7 }}>
+              {viewingProject.description}
+            </Typography>
+
+            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Role
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {viewingProject.role}
+            </Typography>
+
+            {viewingProject.technologies && viewingProject.technologies.length > 0 && (
+              <>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  Technologies
+                </Typography>
+                <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {viewingProject.technologies.map((tech, index) => (
+                    <Chip
+                      key={index}
+                      label={tech}
+                      size="medium"
+                      variant="outlined"
+                    />
+                  ))}
+                </Box>
+              </>
+            )}
+
+            {viewingProject.skills && viewingProject.skills.length > 0 && (
+              <>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                  Skills
+                </Typography>
+                <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {viewingProject.skills.map((skill, index) => (
+                    <Chip
+                      key={index}
+                      label={skill}
+                      size="medium"
+                      variant="outlined"
+                    />
+                  ))}
+                </Box>
+              </>
+            )}
+
+            <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', mt: 3 }}>
+              {viewingProject.github && viewingProject.github.trim() !== "" && (
+                <Button
+                  variant="outlined"
+                  startIcon={<GitHubIcon />}
+                  href={viewingProject.github}
+                  target="_blank"
+                  sx={{
+                    textTransform: "none",
+                    borderColor: "#3eb93e",
+                    color: "#3eb93e",
+                    ":hover": { borderColor: "#2a8a2a", color: "#2a8a2a" },
+                  }}
+                >
+                  GitHub
+                </Button>
+              )}
+              {viewingProject.liveDemo && viewingProject.liveDemo.trim() !== "" && (
+                <Button
+                  variant="outlined"
+                  startIcon={<LaunchIcon />}
+                  href={viewingProject.liveDemo}
+                  target="_blank"
+                  sx={{
+                    textTransform: "none",
+                    borderColor: "#3eb93e",
+                    color: "#3eb93e",
+                    ":hover": { borderColor: "#2a8a2a", color: "#2a8a2a" },
+                  }}
+                >
+                  Live Demo
+                </Button>
+              )}
+              {viewingProject.problemLog && viewingProject.problemLog.trim() !== "" && (
+                <Button
+                  variant="outlined"
+                  startIcon={<LaunchIcon />}
+                  href={viewingProject.problemLog}
+                  target="_blank"
+                  sx={{
+                    textTransform: "none",
+                    borderColor: "#3eb93e",
+                    color: "#3eb93e",
+                    ":hover": { borderColor: "#2a8a2a", color: "#2a8a2a" },
+                  }}
+                >
+                  Dev Log
+                </Button>
+              )}
+              {viewingProject.testingLog && viewingProject.testingLog.trim() !== "" && (
+                <Button
+                  variant="outlined"
+                  startIcon={<LaunchIcon />}
+                  href={viewingProject.testingLog}
+                  target="_blank"
+                  sx={{
+                    textTransform: "none",
+                    borderColor: "#3eb93e",
+                    color: "#3eb93e",
+                    ":hover": { borderColor: "#2a8a2a", color: "#2a8a2a" },
+                  }}
+                >
+                  Test Report
+                </Button>
+              )}
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Close</Button>
+          </DialogActions>
+        </Dialog>
+      )}
+
+      {/* Admin Edit/Add Modal */}
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>
           {editingProject ? "Edit Project" : "Add New Project"}
@@ -364,6 +605,16 @@ const Projects = () => {
           />
           <TextField
             margin="dense"
+            name="time"
+            label="Time Period (e.g., 2025-05-01 ~ PRESENT)"
+            fullWidth
+            variant="outlined"
+            required
+            value={projectForm.time}
+            onChange={handleFormChange}
+          />
+          <TextField
+            margin="dense"
             name="description"
             label="Description"
             fullWidth
@@ -383,6 +634,16 @@ const Projects = () => {
             value={projectForm.technologies}
             onChange={handleFormChange}
             helperText="e.g., React, Node.js, MongoDB"
+          />
+          <TextField
+            margin="dense"
+            name="skills"
+            label="Skills (comma separated)"
+            fullWidth
+            variant="outlined"
+            value={projectForm.skills}
+            onChange={handleFormChange}
+            helperText="e.g., QA, E2E Testing, JUnit"
           />
           <TextField
             margin="dense"
@@ -415,7 +676,7 @@ const Projects = () => {
           <TextField
             margin="dense"
             name="problemLog"
-            label="Problem&Solution Log URL"
+            label="Dev Log URL"
             fullWidth
             variant="outlined"
             value={projectForm.problemLog}
