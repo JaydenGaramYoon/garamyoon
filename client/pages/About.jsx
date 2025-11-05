@@ -207,7 +207,19 @@ const About = () => {
       >
         About Me
       </Typography>
-
+      {/* 왼쪽: 이미지 */}
+        <Box
+          component="img"
+          src="/photo-of-me.png"
+          alt="Garam Yoon"
+          sx={{
+            width: { xs: 100, sm: 200, md: 260, lg: 300 },
+            height: { xs: 100, sm: 200, md: 260, lg: 300 },
+            borderRadius: '50%',
+            objectFit: 'cover',
+            boxShadow: '0 10px 20px rgba(0,0,0,0.3)'
+          }}
+        />
       <Grid container spacing={4}>
         {/* Skills Section (moved to top) */}
         <Grid item xs={12}>

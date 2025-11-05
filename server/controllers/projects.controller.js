@@ -11,6 +11,16 @@ const create = async (req, res) => {
                 cleanedBody[key] = value;
             }
         }
+        // 배열 필드 정규화 (문자열로 올 때 대비)
+        const toArray = (v) =>
+            Array.isArray(v)
+                ? v
+                : String(v || '')
+                    .split(',')
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+        if ('technologies' in cleanedBody) cleanedBody.technologies = toArray(cleanedBody.technologies);
+        if ('skills' in cleanedBody)       cleanedBody.skills       = toArray(cleanedBody.skills);
         
         const project = new Project(cleanedBody);
         await project.save();
@@ -29,9 +39,23 @@ const create = async (req, res) => {
 const list = async (req, res) => {
     try {
         const projects = await Project.find()
-            .select('title image description technologies role github liveDemo problemLog testingLog created updated')
-            .sort({ created: -1 }); // 최신순 정렬
-        res.json(projects);
+            .sort({ _id: -1 })
+            .lean();
+        const normalized = (projects || []).map((p) => ({
+            _id: p._id,
+            title: p.title || '',
+            time: typeof p.time === 'string' ? p.time : '',
+            image: p.image || '',
+            description: p.description || '',
+            technologies: Array.isArray(p.technologies) ? p.technologies : [],
+            skills: Array.isArray(p.skills) ? p.skills : [],
+            role: p.role || '',
+            github: p.github || '',
+            liveDemo: p.liveDemo || '',
+            problemLog: p.problemLog || '',
+            testingLog: p.testingLog || ''
+        }));
+        res.json(normalized);
     } catch (err) {
         return res.status(400).json({
             error: errorHandler.getErrorMessage(err)
@@ -57,7 +81,22 @@ const projectByID = async (req, res, next, id) => {
 };
 
 const read = (req, res) => {
-    return res.json(req.profile);
+    const src = req.profile && typeof req.profile.toObject === 'function' ? req.profile.toObject() : req.profile || {};
+    const normalized = {
+        _id: src._id,
+        title: src.title || '',
+        time: typeof src.time === 'string' ? src.time : '',
+        image: src.image || '',
+        description: src.description || '',
+        technologies: Array.isArray(src.technologies) ? src.technologies : [],
+        skills: Array.isArray(src.skills) ? src.skills : [],
+        role: src.role || '',
+        github: src.github || '',
+        liveDemo: src.liveDemo || '',
+        problemLog: src.problemLog || '',
+        testingLog: src.testingLog || ''
+    };
+    return res.json(normalized);
 };
 
 const update = async (req, res) => {
@@ -69,10 +108,19 @@ const update = async (req, res) => {
                 cleanedBody[key] = value;
             }
         }
+        // 배열 필드 정규화 (문자열로 올 때 대비)
+        const toArray = (v) =>
+            Array.isArray(v)
+                ? v
+                : String(v || '')
+                    .split(',')
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+        if ('technologies' in cleanedBody) cleanedBody.technologies = toArray(cleanedBody.technologies);
+        if ('skills' in cleanedBody)       cleanedBody.skills       = toArray(cleanedBody.skills);
         
         let project = req.profile;
         project = extend(project, cleanedBody);
-        project.updated = Date.now();
         await project.save();
         
         res.json(project);

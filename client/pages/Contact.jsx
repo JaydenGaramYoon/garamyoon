@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Card from "@mui/material/Card";
+import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
@@ -91,10 +91,9 @@ const Contact = () => {
     };
 
     return (
-        <Card
+        <Container
+            maxWidth="lg"
             sx={{
-                maxWidth: "1200px",
-                margin: "auto",
                 mt: 5,
                 px: 3,
                 py: 4,
@@ -103,20 +102,21 @@ const Contact = () => {
             <Typography
                 variant="h3"
                 sx={{
-                    fontWeight: "bold",
+                    fontWeight: 800,
                     color: "#3eb93e",
+                    letterSpacing: -0.3,
                     mb: 4,
                     textAlign: "center",
                 }}
             >
-                Contact Me
+                Contact
             </Typography>
 
             {/* Contact Icons */}
             <Box sx={{ display: "flex", justifyContent: "center", gap: 3, mb: 4 }}>
                 <IconButton
                     component="a"
-                    href="mailto:gyoon1@my.centennialcollege.ca"
+                    href="mailto:rkfka9536@gmail.com"
                     sx={{
                         color: "#3eb93e",
                         '&:hover': { color: "#2a8a2a" }
@@ -127,7 +127,7 @@ const Contact = () => {
 
                 <IconButton
                     component="a"
-                    href="https://www.linkedin.com/in/garam-yoon-610245326"
+                    href="https://www.linkedin.com/in/garam-yoon"
                     target="_blank"
                     sx={{
                         color: "#3eb93e",
@@ -149,7 +149,7 @@ const Contact = () => {
                     <GitHubIcon fontSize="large" />
                 </IconButton>
 
-                <IconButton
+                {/* <IconButton
                     component="a"
                     href="https://www.notion.so/1e097141ccc38075bc31eb034c0910ef?v=1e097141ccc380219636000c91bf3741&pvs=4"
                     target="_blank"
@@ -159,14 +159,14 @@ const Contact = () => {
                     }}
                 >
                     <MenuBookIcon fontSize="large" />
-                </IconButton>
+                </IconButton> */}
             </Box>
 
             <Typography
                 variant="body1"
-                sx={{ fontSize: "1.2rem", color: "#000000", mb: 4, textAlign: "center" }}
+                sx={{ mb: 4, textAlign: "center" }}
             >
-                Get in touch with me for any inquiries or collaborations.
+                I appreciate your time and consideration. <br />Please feel free to reach out, I'd love to connect!
             </Typography>
 
             {/* Alert Messages */}
@@ -180,89 +180,91 @@ const Contact = () => {
                 </Alert>
             )}
 
-            {/* Contact Form */}
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4, mx: 'auto', maxWidth: '600px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Grid container spacing={3} sx={{ width: '100%', justifyContent: 'center' }}>
-                    <Grid item xs={12} md={6}>
-                        <TextField
-                            fullWidth
-                            label="First Name"
-                            name="first_name"
-                            value={first_name}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            required
-                            variant="outlined"
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <TextField
-                            fullWidth
-                            label="Last Name"
-                            name="last_name"
-                            value={last_name}
-                            onChange={(e) => setLastName(e.target.value)}
-                            required
-                            variant="outlined"
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <TextField
-                            fullWidth
-                            label="Email Address"
-                            name="email_address"
-                            type="email"
-                            value={email_address}
-                            onChange={(e) => setEmailAddress(e.target.value)}
-                            required
-                            variant="outlined"
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <TextField
-                            fullWidth
-                            label="Contact Number"
-                            name="contact_number"
-                            type="tel"
-                            value={contact_number}
-                            onChange={(e) => setContactNumber(e.target.value)}
-                            required
-                            variant="outlined"
-                        />
-                    </Grid>
-                    <Grid item xs={12} width={'80%'}>
-                        <TextField
-                            fullWidth
-                            label="Message"
-                            name="message"
-                            multiline
-                            rows={4}
-                            value={message}
-                            onChange={(e) => setMessage(e.target.value)}
-                            required
-                            variant="outlined"
-                        />
-                    </Grid>
-                </Grid>
-                
-                {/* Send Message Button - Separate from Grid */}
-                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', width: '100%' }}>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        disabled={isLoading}
-                        sx={{
-                            backgroundColor: "#3eb93e",
-                            '&:hover': { backgroundColor: "#2a8a2a" },
-                            px: 4,
-                            py: 1.5,
-                            fontSize: "1rem",
-                        }}
-                    >
-                        {isLoading ? "Sending..." : "Send Message"}
-                    </Button>
-                </Box>
-            </Box>
-        </Card>
+            {/* Contact Form - temporarily disabled */}
+            {false && (
+              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 4, mx: 'auto', maxWidth: '600px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Grid container spacing={3} sx={{ width: '100%', justifyContent: 'center' }}>
+                      <Grid item xs={12} md={6}>
+                          <TextField
+                              fullWidth
+                              label="First Name"
+                              name="first_name"
+                              value={first_name}
+                              onChange={(e) => setFirstName(e.target.value)}
+                              required
+                              variant="outlined"
+                          />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                          <TextField
+                              fullWidth
+                              label="Last Name"
+                              name="last_name"
+                              value={last_name}
+                              onChange={(e) => setLastName(e.target.value)}
+                              required
+                              variant="outlined"
+                          />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                          <TextField
+                              fullWidth
+                              label="Email Address"
+                              name="email_address"
+                              type="email"
+                              value={email_address}
+                              onChange={(e) => setEmailAddress(e.target.value)}
+                              required
+                              variant="outlined"
+                          />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                          <TextField
+                              fullWidth
+                              label="Contact Number"
+                              name="contact_number"
+                              type="tel"
+                              value={contact_number}
+                              onChange={(e) => setContactNumber(e.target.value)}
+                              required
+                              variant="outlined"
+                          />
+                      </Grid>
+                      <Grid item xs={12} width={'80%'}>
+                          <TextField
+                              fullWidth
+                              label="Message"
+                              name="message"
+                              multiline
+                              rows={4}
+                              value={message}
+                              onChange={(e) => setMessage(e.target.value)}
+                              required
+                              variant="outlined"
+                          />
+                      </Grid>
+                  </Grid>
+                  
+                  {/* Send Message Button - Separate from Grid */}
+                  <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', width: '100%' }}>
+                      <Button
+                          type="submit"
+                          variant="contained"
+                          disabled={isLoading}
+                          sx={{
+                              backgroundColor: "#3eb93e",
+                              '&:hover': { backgroundColor: "#2a8a2a" },
+                              px: 4,
+                              py: 1.5,
+                              fontSize: "1rem",
+                          }}
+                      >
+                          {isLoading ? "Sending..." : "Send Message"}
+                      </Button>
+                  </Box>
+              </Box>
+            )}
+        </Container>
     );
 };
 
