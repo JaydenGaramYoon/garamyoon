@@ -47,6 +47,14 @@ const Projects = () => {
   // 프로젝트 정렬 함수
   const sortProjects = (projectsArray) => {
     return [...projectsArray].sort((a, b) => {
+      // TESTING 키워드 체크 (제목에 포함 여부)
+      const aHasTesting = a.title?.toUpperCase().includes('TESTING') || a.title?.toUpperCase().includes('QA');
+      const bHasTesting = b.title?.toUpperCase().includes('TESTING') || b.title?.toUpperCase().includes('QA');
+      
+      // TESTING 키워드가 있는 프로젝트를 먼저
+      if (aHasTesting && !bHasTesting) return -1;
+      if (!aHasTesting && bHasTesting) return 1;
+      
       const parseTime = (timeStr) => {
         if (!timeStr) return { start: new Date(0), end: new Date(0), isPresent: false };
         
@@ -87,11 +95,6 @@ const Projects = () => {
       
       const aTime = parseTime(a.time);
       const bTime = parseTime(b.time);
-      
-      // 디버깅을 위한 로그
-      if (!aTime.isPresent && !bTime.isPresent) {
-        console.log(`Comparing: ${a.title} (${a.time}, end: ${aTime.end}) vs ${b.title} (${b.time}, end: ${bTime.end})`);
-      }
       
       // PRESENT 프로젝트끼리는 시작일 최신순
       if (aTime.isPresent && bTime.isPresent) {
