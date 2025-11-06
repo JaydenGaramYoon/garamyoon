@@ -23,11 +23,7 @@ function MainRouter() {
       <Menu />
 
       <Routes>
-  {/* 기본 루트를 All 페이지로 변경하여 섹션을 한 페이지에서 나란히 표시 */}
-  <Route path="/" element={<All />} />
-  {/* 단일 홈 섹션만 보고 싶을 때를 위한 경로 */}
-  <Route path="/home" element={<Home />} />
-  {/* 기존 all 경로도 유지 */}
+        <Route path="/" element={<Home />} />
   <Route path="/all" element={<All />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/project" element={<Projects />} />
