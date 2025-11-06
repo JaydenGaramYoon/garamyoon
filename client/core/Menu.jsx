@@ -82,23 +82,16 @@ export default function Menu() {
         {/* Desktop nav */}
         <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
           <Link to="/">
-            <Button 
-              sx={{ 
-                color: location.pathname === "/" ? ACTIVE_COLOR : INACTIVE_COLOR,
-                fontSize: '1.05rem',
-                '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' },
-                transition: 'color 0.2s ease'
-              }}
-            >
+            <IconButton aria-label="Home" sx={{ color: location.pathname === "/" ? ACTIVE_COLOR : INACTIVE_COLOR }}>
+              <HomeIcon />
               Home
-            </Button>
+            </IconButton>
           </Link>
           <Link to="/project">
             <Button sx={{
               color: location.pathname === "/project" ? ACTIVE_COLOR : INACTIVE_COLOR,
               fontSize: '1.05rem',
-              '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' },
-              transition: 'color 0.2s ease'
+              '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' }
             }}>
               Works
             </Button>
@@ -109,8 +102,7 @@ export default function Menu() {
             sx={{
               color: INACTIVE_COLOR,
               fontSize: '1.05rem',
-              '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' },
-              transition: 'color 0.2s ease'
+              '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' }
             }}
           >
             Blog
@@ -119,8 +111,7 @@ export default function Menu() {
             <Button sx={{
               color: location.pathname === "/about" ? ACTIVE_COLOR : INACTIVE_COLOR,
               fontSize: '1.05rem',
-              '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' },
-              transition: 'color 0.2s ease'
+              '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' }
             }}>
               About
             </Button>
@@ -129,8 +120,7 @@ export default function Menu() {
             <Button sx={{
               color: location.pathname === "/contact" ? ACTIVE_COLOR : INACTIVE_COLOR,
               fontSize: '1.05rem',
-              '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' },
-              transition: 'color 0.2s ease'
+              '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' }
             }}>
               Contact
             </Button>
@@ -142,8 +132,7 @@ export default function Menu() {
               <Button sx={{
                 color: location.pathname === "/users" ? ACTIVE_COLOR : INACTIVE_COLOR,
                 fontSize: '1.05rem',
-                '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' },
-                transition: 'color 0.2s ease'
+                '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' }
               }}>
                 Users
               </Button>
@@ -159,20 +148,14 @@ export default function Menu() {
                   sx={{
                     color: (location.pathname === `/user/${auth.isAuthenticated()?.user?._id}`) ? ACTIVE_COLOR : INACTIVE_COLOR,
                     fontSize: '1.05rem',
-                    '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' },
-                    transition: 'color 0.2s ease'
+                    '&:hover': { backgroundColor: '#ffffff' }
                   }}
                 >
                   My Profile
                 </Button>
               </Link>
               <Button
-                sx={{ 
-                  color: "#000000", 
-                  fontSize: '1.05rem', 
-                  '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' },
-                  transition: 'color 0.2s ease'
-                }}
+                sx={{ color: "#000000", fontSize: '1.05rem', '&:hover': { color: "#3eb96bff", backgroundColor: '#ffffff' } }}
                 onClick={() => {
                   auth.completeLogout(() => navigate("/"));
                 }}
@@ -204,75 +187,29 @@ export default function Menu() {
         <Box sx={{ width: { xs: 300, sm: 360 } }} role="presentation" onClick={toggleMobile(false)} onKeyDown={toggleMobile(false)}>
           <List>
             <ListItem disablePadding>
-              <ListItemButton 
-                selected={location.pathname === "/"} 
-                onClick={() => go('/')}
-                sx={{
-                  '&.Mui-selected': {
-                    backgroundColor: 'transparent',
-                    color: ACTIVE_COLOR,
-                  },
-                  '&:hover': {
-                    backgroundColor: 'rgba(62, 185, 107, 0.08)',
-                    color: ACTIVE_COLOR,
-                  },
-                  transition: 'all 0.2s ease',
-                }}
-              > 
+              <ListItemButton selected={location.pathname === "/"} onClick={() => go('/')}> 
+                <HomeIcon sx={{ mr: 1 }} />
                 <ListItemText primary="Home" />
               </ListItemButton>
             </ListItem>
             {/* Removed Services and All from mobile menu */}
             <ListItem disablePadding>
-              <ListItemButton 
-                selected={location.pathname === "/project"} 
-                onClick={() => go('/project')}
-                sx={{
-                  '&.Mui-selected': {
-                    backgroundColor: 'transparent',
-                    color: ACTIVE_COLOR,
-                  },
-                  '&:hover': {
-                    backgroundColor: 'rgba(62, 185, 107, 0.08)',
-                    color: ACTIVE_COLOR,
-                  },
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <ListItemText primary="Works" />
+              <ListItemButton selected={location.pathname === "/project"} onClick={() => go('/project')}>
+                <ListItemText primary="Projects" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton 
-                component="a" 
-                href="https://www.notion.so/1e097141ccc38075bc31eb034c0910ef?v=1e097141ccc380219636000c91bf3741"
-                sx={{
-                  '&:hover': {
-                    backgroundColor: 'rgba(62, 185, 107, 0.08)',
-                    color: ACTIVE_COLOR,
-                  },
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <ListItemText primary="BLOG" />
+              <ListItemButton component="a" href="https://www.notion.so/1e097141ccc38075bc31eb034c0910ef?v=1e097141ccc380219636000c91bf3741">
+                <ListItemText primary="Blog" primaryTypographyProps={{ sx: { textTransform: 'none' } }} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton 
-                selected={location.pathname === "/contact"} 
-                onClick={() => go('/contact')}
-                sx={{
-                  '&.Mui-selected': {
-                    backgroundColor: 'transparent',
-                    color: ACTIVE_COLOR,
-                  },
-                  '&:hover': {
-                    backgroundColor: 'rgba(62, 185, 107, 0.08)',
-                    color: ACTIVE_COLOR,
-                  },
-                  transition: 'all 0.2s ease',
-                }}
-              >
+              <ListItemButton selected={location.pathname === "/about"} onClick={() => go('/about')}>
+                <ListItemText primary="About" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton selected={location.pathname === "/contact"} onClick={() => go('/contact')}>
                 <ListItemText primary="Contact" />
               </ListItemButton>
             </ListItem>
@@ -281,21 +218,7 @@ export default function Menu() {
           <List>
             {auth.isAuthenticated() && auth.isAuthenticated().user?.admin && (
               <ListItem disablePadding>
-                <ListItemButton 
-                  selected={location.pathname === "/users"} 
-                  onClick={() => go('/users')}
-                  sx={{
-                    '&.Mui-selected': {
-                      backgroundColor: 'transparent',
-                      color: ACTIVE_COLOR,
-                    },
-                    '&:hover': {
-                      backgroundColor: 'rgba(62, 185, 107, 0.08)',
-                      color: ACTIVE_COLOR,
-                    },
-                    transition: 'all 0.2s ease',
-                  }}
-                >
+                <ListItemButton selected={location.pathname === "/users"} onClick={() => go('/users')}>
                   <ListItemText primary="Users" />
                 </ListItemButton>
               </ListItem>
@@ -304,35 +227,12 @@ export default function Menu() {
             {auth.isAuthenticated() ? (
               <>
                 <ListItem disablePadding>
-                  <ListItemButton 
-                    selected={location.pathname.startsWith(`/user/`)} 
-                    onClick={() => go(`/user/${auth.isAuthenticated().user._id}`)}
-                    sx={{
-                      '&.Mui-selected': {
-                        backgroundColor: 'transparent',
-                        color: ACTIVE_COLOR,
-                      },
-                      '&:hover': {
-                        backgroundColor: 'rgba(62, 185, 107, 0.08)',
-                        color: ACTIVE_COLOR,
-                      },
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
+                  <ListItemButton selected={location.pathname.startsWith(`/user/`)} onClick={() => go(`/user/${auth.isAuthenticated().user._id}`)}>
                     <ListItemText primary="My Profile" />
                   </ListItemButton>
                 </ListItem>
                 <ListItem disablePadding>
-                  <ListItemButton 
-                    onClick={() => auth.completeLogout(() => go('/'))}
-                    sx={{
-                      '&:hover': {
-                        backgroundColor: 'rgba(62, 185, 107, 0.08)',
-                        color: ACTIVE_COLOR,
-                      },
-                      transition: 'all 0.2s ease',
-                    }}
-                  >
+                  <ListItemButton onClick={() => auth.completeLogout(() => go('/'))}>
                     <ListItemText primary="Sign out" />
                   </ListItemButton>
                 </ListItem>
