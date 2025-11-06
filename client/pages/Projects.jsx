@@ -48,19 +48,50 @@ const Projects = () => {
   const sortProjects = (projectsArray) => {
     return [...projectsArray].sort((a, b) => {
       const parseTime = (timeStr) => {
-        if (!timeStr) return { start: new Date(0), isPresent: false };
+        if (!timeStr) return { start: new Date(0), end: new Date(0), isPresent: false };
         
-        // "2025-05-01 ~ PRESENT" 또는 "2025-05-01 ~ 2025-12-31" 형식
+        // "Month Year" 형식을 "Year-Month-01" 형식으로 변환하는 함수
+        const convertToISO = (dateStr) => {
+          const monthMap = {
+            'january': '01', 'february': '02', 'march': '03', 'april': '04',
+            'may': '05', 'june': '06', 'july': '07', 'august': '08',
+            'september': '09', 'october': '10', 'november': '11', 'december': '12'
+          };
+          
+          const parts = dateStr.toLowerCase().trim().split(' ');
+          if (parts.length === 2) {
+            const month = monthMap[parts[0]];
+            const year = parts[1];
+            if (month && year) {
+              return `${year}-${month}-01`;
+            }
+          }
+          return dateStr; // 변환 실패시 원본 반환
+        };
+        
+        // "2025-05-01 ~ PRESENT" 또는 "September 2025 ~ November 2025" 또는 "April 2025" 형식
         const parts = timeStr.split('~').map(p => p.trim());
-        const startDate = new Date(parts[0]);
+        const startDate = new Date(convertToISO(parts[0]));
         const isPresent = parts[1]?.toUpperCase() === 'PRESENT';
-        const endDate = isPresent ? new Date() : new Date(parts[1] || parts[0]);
+        
+        // 종료일이 있으면 그것을 사용, 없으면 시작일을 종료일로 사용
+        let endDate;
+        if (parts.length > 1 && parts[1]) {
+          endDate = isPresent ? new Date() : new Date(convertToISO(parts[1]));
+        } else {
+          endDate = new Date(convertToISO(parts[0])); // 단일 날짜면 시작일 = 종료일
+        }
         
         return { start: startDate, end: endDate, isPresent };
       };
       
       const aTime = parseTime(a.time);
       const bTime = parseTime(b.time);
+      
+      // 디버깅을 위한 로그
+      if (!aTime.isPresent && !bTime.isPresent) {
+        console.log(`Comparing: ${a.title} (${a.time}, end: ${aTime.end}) vs ${b.title} (${b.time}, end: ${bTime.end})`);
+      }
       
       // PRESENT 프로젝트끼리는 시작일 최신순
       if (aTime.isPresent && bTime.isPresent) {
