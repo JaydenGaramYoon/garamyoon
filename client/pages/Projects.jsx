@@ -44,13 +44,45 @@ const Projects = () => {
   });
   // jwt 변수 제거 - 필요할 때마다 동적으로 가져오기
 
+  // 프로젝트 정렬 함수
+  const sortProjects = (projectsArray) => {
+    return [...projectsArray].sort((a, b) => {
+      const parseTime = (timeStr) => {
+        if (!timeStr) return { start: new Date(0), isPresent: false };
+        
+        // "2025-05-01 ~ PRESENT" 또는 "2025-05-01 ~ 2025-12-31" 형식
+        const parts = timeStr.split('~').map(p => p.trim());
+        const startDate = new Date(parts[0]);
+        const isPresent = parts[1]?.toUpperCase() === 'PRESENT';
+        const endDate = isPresent ? new Date() : new Date(parts[1] || parts[0]);
+        
+        return { start: startDate, end: endDate, isPresent };
+      };
+      
+      const aTime = parseTime(a.time);
+      const bTime = parseTime(b.time);
+      
+      // PRESENT 프로젝트끼리는 시작일 최신순
+      if (aTime.isPresent && bTime.isPresent) {
+        return bTime.start - aTime.start;
+      }
+      
+      // PRESENT 프로젝트가 먼저
+      if (aTime.isPresent) return -1;
+      if (bTime.isPresent) return 1;
+      
+      // 완료된 프로젝트는 종료일 최신순
+      return bTime.end - aTime.end;
+    });
+  };
+
   useEffect(() => {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
     list(signal).then((data) => {
       if (data && !data.error) {
-        setProjects(data);
+        setProjects(sortProjects(data));
       }
     });
 
@@ -155,7 +187,8 @@ const Projects = () => {
     if (editingProject) {
       update({ projectId: editingProject }, { t: token }, projectData).then((data) => {
         if (data && !data.error) {
-          setProjects(projects.map((p) => (p._id === editingProject ? data : p)));
+          const updatedProjects = projects.map((p) => (p._id === editingProject ? data : p));
+          setProjects(sortProjects(updatedProjects));
           handleClose();
         } else {
           console.error("Update error:", data);
@@ -168,7 +201,7 @@ const Projects = () => {
         if (data && !data.error) {
           list().then((updatedData) => {
             if (updatedData && !updatedData.error) {
-              setProjects(updatedData);
+              setProjects(sortProjects(updatedData));
             }
           });
           handleClose();
