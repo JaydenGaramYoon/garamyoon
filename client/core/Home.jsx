@@ -365,7 +365,7 @@ export default function ResumeSimple() {
           Garam Yoon
         </Typography>
         <Typography variant="subtitle1" sx={{ color: "text.secondary" }}>
-          Junior Software Quality Assurance Tester
+          Junior Software Quality Assurance Engineer
         </Typography>
       </Box>
 
