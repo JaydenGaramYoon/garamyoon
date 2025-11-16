@@ -16,4 +16,11 @@ jobs:
           POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
       - name: Run API tests
         run: |
-          postman collection run "43737297-e9424a22-9ce3-4e8a-b834-7fff1199d3bc" -e "43737297-c64b2c3b-bd50-4a46-94c5-e6b50db223d3"
+          postman collection run "43737297-e9424a22-9ce3-4e8a-b834-7fff1199d3bc" -e "43737297-c64b2c3b-bd50-4a46-94c5-e6b50db223d3" --reporters cli,htmlextra --reporter-htmlextra-export testResults/report.html
+      
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-test-report
+          path: testResults/report.html
