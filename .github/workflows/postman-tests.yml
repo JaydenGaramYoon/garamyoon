@@ -13,7 +13,7 @@ jobs:
       
       - name: Run API tests
         env:
-          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+          POSTMAN_API_KEY: ${{ secrets.GARAM }}
         run: |
           New-Item -ItemType Directory -Force -Path testResults
           postman collection run "43737297-e9424a22-9ce3-4e8a-b834-7fff1199d3bc" -e "43737297-c64b2c3b-bd50-4a46-94c5-e6b50db223d3" --reporters cli,json --reporter-json-export testResults/report.json
