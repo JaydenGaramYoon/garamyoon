@@ -413,7 +413,7 @@ export default function ResumeSimple() {
         justifyContent="center"
         sx={{ mb: { xs: 4, md: 6 } }}
       >
-        <Button
+        {/* <Button
           component="a"
           href="/Resume.pdf"
           target="_blank"
@@ -429,7 +429,7 @@ export default function ResumeSimple() {
           }}
         >
           Download Resume
-        </Button>
+        </Button> */}
         <Button
           component={Link}
           to="/contact"
